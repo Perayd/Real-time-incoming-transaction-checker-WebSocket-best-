@@ -1,0 +1,21 @@
+const ERC20_ABI = [
+  "event Transfer(address indexed from, address indexed to, uint256 value)"
+];
+
+const TOKEN_ADDRESS = "0xTokenContractAddress";
+const wallet = "0xYourWalletAddress";
+
+const contract = new ethers.Contract(
+  TOKEN_ADDRESS,
+  ERC20_ABI,
+  provider
+);
+
+contract.on("Transfer", (from, to, value) => {
+  if (to.toLowerCase() === wallet.toLowerCase()) {
+    console.log("Incoming token transfer:", {
+      from,
+      amount: ethers.formatUnits(value, 18)
+    });
+  }
+});

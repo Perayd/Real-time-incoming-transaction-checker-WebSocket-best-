@@ -1,0 +1,27 @@
+import { ethers } from "ethers";
+
+const RPC = "https://mainnet.infura.io/v3/YOUR_INFURA_KEY";
+const WALLET_ADDRESS = "0xYourWalletAddressHere".toLowerCase();
+
+const provider = new ethers.JsonRpcProvider(RPC);
+let lastBlock = await provider.getBlockNumber();
+
+setInterval(async () => {
+  const currentBlock = await provider.getBlockNumber();
+
+  for (let i = lastBlock + 1; i <= currentBlock; i++) {
+    const block = await provider.getBlockWithTransactions(i);
+
+    for (const tx of block.transactions) {
+      if (tx.to && tx.to.toLowerCase() === WALLET_ADDRESS) {
+        console.log("Incoming TX:", {
+          hash: tx.hash,
+          from: tx.from,
+          value: ethers.formatEther(tx.value),
+        });
+      }
+    }
+  }
+
+  lastBlock = currentBlock;
+}, 5000);
